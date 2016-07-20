@@ -684,7 +684,7 @@ def main():
             default_release = dict(default=None, aliases=['default-release']),
             install_recommends = dict(default=None, aliases=['install-recommends'], type='bool'),
             force = dict(default='no', type='bool'),
-            upgrade = dict(choices=['no', 'yes', 'safe', 'full', 'dist']),
+            upgrade = dict(choices=['no', 'False', 'yes', 'True', 'safe', 'full', 'dist']),
             dpkg_options = dict(default=DPKG_OPTIONS),
             autoremove = dict(type='bool', default=False, aliases=['autoclean']),
             only_upgrade = dict(type='bool', default=False),
@@ -717,8 +717,10 @@ def main():
 
     p = module.params
 
-    if p['upgrade'] == 'no':
+    if p['upgrade'] in ('no', 'False'):
         p['upgrade'] = None
+    elif p['upgrade'] == 'True':
+        p['upgrade'] = 'yes'
 
     if not APTITUDE_CMD and p.get('upgrade', None) in [ 'full', 'safe', 'yes' ]:
         module.fail_json(msg="Could not find aptitude. Please ensure it is installed.")
